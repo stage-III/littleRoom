@@ -138,6 +138,16 @@ class BookingCreateView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     authentication_classes = [TokenAuthentication]
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        booking = serializer.instance
+        data = dict(BookingListSerializer(booking).data)
+        if hasattr(booking, '_client_secret'):
+            data['client_secret'] = booking._client_secret
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 class BookingMineView(generics.ListAPIView):
     serializer_class = BookingListSerializer

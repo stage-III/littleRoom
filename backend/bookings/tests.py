@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from unittest.mock import MagicMock, patch
 from zoneinfo import ZoneInfo
 
 from rest_framework import status
@@ -315,3 +316,83 @@ class BookingMineViewTests(APITestCase):
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, [])
+
+
+class BookingCreateStripeTests(APITestCase):
+    url = '/api/bookings/'
+
+    def setUp(self):
+        self.room = Room.objects.create(name='Room 101', slug='room-101', hourly_rate='10.00')
+        StudioHours.objects.create(
+            day_of_week=0,
+            open_time=time(9, 0),
+            close_time=time(22, 0),
+            is_open=True,
+        )
+        s = StudioSettings.get_solo()
+        s.min_booking_hours = 1
+        s.allow_pay_on_day = True
+        s.save()
+        self.payload = {
+            'room': self.room.pk,
+            'start_datetime': make_dt(10).isoformat(),
+            'end_datetime': make_dt(11).isoformat(),
+            'guest_email': 'guest@example.com',
+        }
+
+    def _mock_intent(self):
+        intent = MagicMock()
+        intent.id = 'pi_test_123'
+        intent.client_secret = 'pi_test_123_secret_abc'
+        return intent
+
+    def test_upfront_booking_returns_client_secret_when_stripe_configured(self):
+        with patch('bookings.serializers.stripe.PaymentIntent.create', return_value=self._mock_intent()), \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            res = self.client.post(self.url, self.payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['client_secret'], 'pi_test_123_secret_abc')
+
+    def test_upfront_booking_stores_payment_intent_id(self):
+        with patch('bookings.serializers.stripe.PaymentIntent.create', return_value=self._mock_intent()), \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            self.client.post(self.url, self.payload, format='json')
+        self.assertEqual(Booking.objects.get().stripe_payment_intent_id, 'pi_test_123')
+
+    def test_upfront_booking_without_stripe_key_has_no_client_secret(self):
+        with self.settings(STRIPE_SECRET_KEY=''):
+            res = self.client.post(self.url, self.payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertNotIn('client_secret', res.data)
+
+    def test_on_day_booking_does_not_create_payment_intent(self):
+        user = User.objects.create_user(username='u', email='u@example.com', password='x')
+        user.allow_pay_on_day = True
+        user.save()
+        self.client.force_authenticate(user=user)
+        on_day_payload = {
+            'room': self.room.pk,
+            'start_datetime': make_dt(10).isoformat(),
+            'end_datetime': make_dt(11).isoformat(),
+            'payment_method': 'ON_DAY',
+        }
+        with patch('bookings.serializers.stripe.PaymentIntent.create') as mock_create, \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            res = self.client.post(self.url, on_day_payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        mock_create.assert_not_called()
+        self.assertNotIn('client_secret', res.data)
+
+    def test_payment_intent_amount_is_correct(self):
+        # 2-hour booking at £10/hr = £20.00 = 2000 pence
+        two_hour_payload = {**self.payload, 'end_datetime': make_dt(12).isoformat()}
+        with patch('bookings.serializers.stripe.PaymentIntent.create', return_value=self._mock_intent()) as mock_create, \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            self.client.post(self.url, two_hour_payload, format='json')
+        self.assertEqual(mock_create.call_args.kwargs['amount'], 2000)
+
+    def test_response_includes_nested_room_data(self):
+        with patch('bookings.serializers.stripe.PaymentIntent.create', return_value=self._mock_intent()), \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            res = self.client.post(self.url, self.payload, format='json')
+        self.assertEqual(res.data['room']['name'], 'Room 101')

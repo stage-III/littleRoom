@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import StepPayment from '../islands/StepPayment.svelte';
 import type { AvailableRoom, Slot } from '../lib/api';
+
+vi.mock('@stripe/stripe-js', () => ({ loadStripe: vi.fn().mockResolvedValue(null) }));
 
 const room: AvailableRoom = {
   room_id: 1,
@@ -82,13 +84,13 @@ describe('StepPayment', () => {
     expect(screen.getByText('This slot is no longer available.')).toBeInTheDocument();
   });
 
-  it('calls onConfirm with payment method and guest details', async () => {
+  it('calls onConfirm with payment method, guest details, and undefined confirmPayment when no Stripe key', async () => {
     const onConfirm = vi.fn();
     render(StepPayment, { ...baseProps, onConfirm });
     await userEvent.type(screen.getByLabelText('Name'), 'Bob');
     await userEvent.type(screen.getByLabelText('Email'), 'bob@example.com');
     await userEvent.click(screen.getByRole('button', { name: /confirm booking/i }));
-    expect(onConfirm).toHaveBeenCalledWith('UPFRONT', 'bob@example.com', 'Bob');
+    expect(onConfirm).toHaveBeenCalledWith('UPFRONT', 'bob@example.com', 'Bob', undefined);
   });
 
   it('disables buttons while submitting', () => {
@@ -102,5 +104,30 @@ describe('StepPayment', () => {
     render(StepPayment, { ...baseProps, isLoggedIn: true, onBack });
     await userEvent.click(screen.getByText('← Back'));
     expect(onBack).toHaveBeenCalled();
+  });
+});
+
+describe('StepPayment — Stripe card element', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.clearAllMocks();
+  });
+
+  it('does not render card element container without a Stripe key', () => {
+    render(StepPayment, { ...baseProps, isLoggedIn: true });
+    expect(document.querySelector('.card-element')).not.toBeInTheDocument();
+  });
+
+  it('renders card element container when Stripe key is present and UPFRONT selected', () => {
+    vi.stubEnv('PUBLIC_STRIPE_KEY', 'pk_test_xxx');
+    render(StepPayment, { ...baseProps, isLoggedIn: true });
+    expect(document.querySelector('.card-element')).toBeInTheDocument();
+  });
+
+  it('does not render card element container when ON_DAY selected', async () => {
+    vi.stubEnv('PUBLIC_STRIPE_KEY', 'pk_test_xxx');
+    render(StepPayment, { ...baseProps, isLoggedIn: true });
+    await userEvent.click(screen.getByLabelText(/pay on the day/i));
+    expect(document.querySelector('.card-element')).not.toBeInTheDocument();
   });
 });

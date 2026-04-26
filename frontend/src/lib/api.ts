@@ -76,4 +76,5 @@ export interface Booking {
   payment_method: 'UPFRONT' | 'ON_DAY';
   payment_status: 'PENDING' | 'PAID' | 'REFUNDED';
   created_at: string;
+  client_secret?: string;
 }

@@ -67,7 +67,9 @@
     step = 'payment';
   }
 
-  async function handlePaymentConfirm(paymentMethod: string, guestEmail: string, guestName: string) {
+  type ConfirmPaymentFn = (clientSecret: string) => Promise<{ error?: { message?: string } }>;
+
+  async function handlePaymentConfirm(paymentMethod: string, guestEmail: string, guestName: string, confirmPayment?: ConfirmPaymentFn) {
     submitting = true;
     submitError = '';
     try {
@@ -83,6 +85,15 @@
       if (guestName)  payload.guest_name  = guestName;
 
       const booking = await api.post<Booking>('/bookings/', payload);
+
+      if (booking.client_secret && confirmPayment) {
+        const result = await confirmPayment(booking.client_secret);
+        if (result.error) {
+          submitError = result.error.message ?? 'Payment failed. Please try again.';
+          return;
+        }
+      }
+
       createdBooking = booking;
       step = 'confirmation';
     } catch (err: unknown) {

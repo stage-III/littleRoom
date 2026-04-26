@@ -1,6 +1,8 @@
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
+import stripe
+from django.conf import settings as django_settings
 from django.db import transaction
 from rest_framework import serializers
 
@@ -112,7 +114,25 @@ class BookingCreateSerializer(serializers.ModelSerializer):
                 validated_data.pop('guest_email', None)
                 validated_data.pop('guest_name', None)
 
-            return Booking.objects.create(**validated_data)
+            booking = Booking.objects.create(**validated_data)
+
+        if (
+            booking.payment_method == Booking.PaymentMethod.UPFRONT
+            and django_settings.STRIPE_SECRET_KEY
+        ):
+            stripe.api_key = django_settings.STRIPE_SECRET_KEY
+            duration_hours = int((end - start).total_seconds() / 3600)
+            amount_pence = int(room.hourly_rate * duration_hours * 100)
+            intent = stripe.PaymentIntent.create(
+                amount=amount_pence,
+                currency='gbp',
+                metadata={'booking_id': booking.pk},
+            )
+            booking.stripe_payment_intent_id = intent.id
+            booking.save(update_fields=['stripe_payment_intent_id'])
+            booking._client_secret = intent.client_secret
+
+        return booking
 
 
 class BookingListSerializer(serializers.ModelSerializer):

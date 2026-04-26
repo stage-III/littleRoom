@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { loadStripe, type Stripe, type StripeCardElement } from '@stripe/stripe-js';
   import type { AvailableRoom, Slot } from '../lib/api';
+
+  type ConfirmPaymentFn = (clientSecret: string) => Promise<{ error?: { message?: string } }>;
 
   let { room, slot, durationHours, isLoggedIn, submitting, error, onConfirm, onBack }: {
     room: AvailableRoom;
@@ -8,13 +11,20 @@
     isLoggedIn: boolean;
     submitting: boolean;
     error: string;
-    onConfirm: (paymentMethod: string, guestEmail: string, guestName: string) => void;
+    onConfirm: (paymentMethod: string, guestEmail: string, guestName: string, confirmPayment?: ConfirmPaymentFn) => void;
     onBack: () => void;
   } = $props();
 
   let paymentMethod = $state('UPFRONT');
   let guestName = $state('');
   let guestEmail = $state('');
+
+  const STRIPE_KEY = import.meta.env.PUBLIC_STRIPE_KEY as string | undefined;
+  let stripe = $state<Stripe | null>(null);
+  let cardElement = $state<StripeCardElement | null>(null);
+  let cardReady = $state(false);
+  let cardError = $state('');
+  let cardContainer = $state<HTMLDivElement | null>(null);
 
   const timeFmt = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/London',
@@ -35,8 +45,47 @@
   const endDate = $derived(new Date(startDate.getTime() + durationHours * 3_600_000));
   const totalPrice = $derived((durationHours * parseFloat(room.hourly_rate)).toFixed(2));
 
+  const needsCard = $derived(paymentMethod === 'UPFRONT' && !!STRIPE_KEY);
+
+  $effect(() => {
+    if (!needsCard || !cardContainer) return;
+
+    loadStripe(STRIPE_KEY!).then((s: Stripe | null) => {
+      if (!s || !cardContainer) return;
+      stripe = s;
+      const elements = s.elements();
+      const card = elements.create('card', {
+        style: {
+          base: { fontFamily: 'inherit', fontSize: '16px', color: '#1a1a1a' },
+          invalid: { color: '#c00' },
+        },
+      });
+      card.mount(cardContainer);
+      card.on('ready', () => { cardReady = true; });
+      card.on('change', e => { cardError = e.error?.message ?? ''; });
+      cardElement = card;
+    });
+
+    return () => {
+      cardElement?.destroy();
+      cardElement = null;
+      cardReady = false;
+      stripe = null;
+    };
+  });
+
+  function buildConfirmPayment(): ConfirmPaymentFn | undefined {
+    if (!stripe || !cardElement) return undefined;
+    const s = stripe;
+    const c = cardElement;
+    return (clientSecret: string) =>
+      s.confirmCardPayment(clientSecret, { payment_method: { card: c } });
+  }
+
   const canSubmit = $derived(
-    !submitting && (!isLoggedIn ? guestName.trim() !== '' && guestEmail.trim() !== '' : true)
+    !submitting
+    && (!isLoggedIn ? guestName.trim() !== '' && guestEmail.trim() !== '' : true)
+    && (!needsCard || cardReady)
   );
 </script>
 
@@ -83,7 +132,18 @@
         Pay on the day
       </label>
     {/if}
-    <p class="payment-note">Your booking is confirmed immediately. Payment details will follow separately.</p>
+
+    {#if needsCard}
+      <div class="card-field">
+        <p class="card-label">Card details</p>
+        <div class="card-element" bind:this={cardContainer}></div>
+        {#if cardError}<p class="card-error">{cardError}</p>{/if}
+      </div>
+    {:else if paymentMethod === 'ON_DAY'}
+      <p class="payment-note">You'll pay when you arrive at the studio.</p>
+    {:else}
+      <p class="payment-note">Your booking is confirmed immediately. Payment details will follow separately.</p>
+    {/if}
   </div>
 
   {#if error}
@@ -95,7 +155,7 @@
     <button
       class="submit"
       disabled={!canSubmit}
-      onclick={() => onConfirm(paymentMethod, guestEmail, guestName)}
+      onclick={() => onConfirm(paymentMethod, guestEmail, guestName, buildConfirmPayment())}
     >
       {submitting ? 'Confirming…' : 'Confirm booking'}
     </button>
@@ -183,6 +243,26 @@
     cursor: pointer;
     font-weight: normal;
   }
+
+  .card-field {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .card-label { font-size: 0.875rem; font-weight: 500; }
+
+  .card-element {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    transition: border-color 0.15s;
+  }
+
+  .card-element:focus-within { border-color: #1a1a1a; }
+
+  .card-error { font-size: 0.8rem; color: #c00; }
 
   .payment-note {
     font-size: 0.8rem;
