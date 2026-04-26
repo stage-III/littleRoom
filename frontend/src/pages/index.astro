@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+import RoomCard from '../components/RoomCard.astro';
+import type { Room } from '../lib/api';
+
+let rooms: Room[] = [];
+try {
+  const res = await fetch(`${import.meta.env.PUBLIC_API_URL ?? 'http://127.0.0.1:8000/api'}/rooms/`);
+  if (res.ok) rooms = await res.json();
+} catch { /* server may not be running at build time */ }
+---
+
+<Base title="Studio">
+  <section class="hero">
+    <h1>Little Room</h1>
+    <p>Rehearsal rooms in the heart of the city. Fully equipped, hourly hire, book online.</p>
+    <a href="/book" class="btn">Book a room</a>
+  </section>
+
+  <section class="about">
+    <h2>The Studio</h2>
+    <p>
+      Little Room is a musician-run rehearsal space with {rooms.length > 0 ? rooms.length : 'several'}
+      fully equipped rooms available for hourly hire. We keep things simple: choose your date,
+      pick a room, and you're good to go.
+    </p>
+  </section>
+
+  <section class="rooms">
+    <h2>Rooms</h2>
+    <div class="room-grid">
+      {rooms.map(room => <RoomCard room={room} />)}
+      {rooms.length === 0 && <p class="empty">No rooms listed yet — check back soon.</p>}
+    </div>
+  </section>
+
+  <section class="info">
+    <div class="info-block">
+      <h2>Find Us</h2>
+      <address>
+        123 Example Street<br />
+        Your City<br />
+        AB1 2CD
+      </address>
+    </div>
+    <div class="info-block">
+      <h2>Contact</h2>
+      <p><a href="mailto:hello@littleroom.example">hello@littleroom.example</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 4rem 0 3rem;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 3rem;
+  }
+
+  .hero h1 { font-size: 3rem; letter-spacing: -0.04em; margin-bottom: 1rem; }
+  .hero p { font-size: 1.1rem; color: #555; margin-bottom: 2rem; }
+
+  .btn {
+    display: inline-block;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #333; }
+
+  section { margin-bottom: 4rem; }
+  h2 { font-size: 1.4rem; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+
+  .room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .info h2 { margin-bottom: 0.75rem; }
+  address { font-style: normal; line-height: 1.8; color: #444; }
+
+  .empty { color: #888; }
+</style>

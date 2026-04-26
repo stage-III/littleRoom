@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import BookingFlow from '../islands/BookingFlow.svelte';
+---
+
+<Base title="Book a Room">
+  <h1>Book a Room</h1>
+  <BookingFlow client:load />
+</Base>
+
+<style>
+  h1 { font-size: 2rem; letter-spacing: -0.03em; margin-bottom: 2rem; }
+</style>
