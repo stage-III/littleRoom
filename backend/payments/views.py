@@ -26,7 +26,8 @@ class StripeWebhookView(APIView):
 
         if event['type'] == 'payment_intent.succeeded':
             intent = event['data']['object']
-            booking_id = intent['metadata'].get('booking_id')
+            metadata = intent['metadata']
+            booking_id = metadata['booking_id'] if 'booking_id' in metadata else None
             if booking_id:
                 Booking.objects.filter(
                     pk=booking_id,
@@ -35,7 +36,8 @@ class StripeWebhookView(APIView):
 
         elif event['type'] == 'payment_intent.payment_failed':
             intent = event['data']['object']
-            booking_id = intent['metadata'].get('booking_id')
+            metadata = intent['metadata']
+            booking_id = metadata['booking_id'] if 'booking_id' in metadata else None
             if booking_id:
                 Booking.objects.filter(
                     pk=booking_id,

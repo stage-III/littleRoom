@@ -1,0 +1,129 @@
+{
+  "folders": [
+    {
+      "name": "little room",
+      "path": "."
+    },
+    {
+      "name": "backend",
+      "path": "backend"
+    },
+    {
+      "name": "frontend",
+      "path": "frontend"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.astro": true,
+      "**/*.pyc": true
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Backend: Django dev server",
+        "type": "shell",
+        "command": "uv run --env-file backend/.env python backend/manage.py runserver",
+        "options": {
+          "cwd": "${workspaceFolder:little room}"
+        },
+        "isBackground": true,
+        "problemMatcher": {
+          "pattern": {
+            "regexp": "^(.*)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "Watching for file changes",
+            "endsPattern": "Quit the server"
+          }
+        },
+        "presentation": {
+          "group": "servers",
+          "panel": "dedicated",
+          "reveal": "always"
+        }
+      },
+      {
+        "label": "Frontend: Astro dev server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": {
+          "cwd": "${workspaceFolder:frontend}"
+        },
+        "isBackground": true,
+        "problemMatcher": {
+          "pattern": {
+            "regexp": "^(.*)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "astro",
+            "endsPattern": "Local"
+          }
+        },
+        "presentation": {
+          "group": "servers",
+          "panel": "dedicated",
+          "reveal": "always"
+        }
+      },
+      {
+        "label": "Stripe: webhook listener",
+        "type": "shell",
+        "command": "stripe listen --forward-to localhost:8000/api/payments/webhook/",
+        "options": {
+          "cwd": "${workspaceFolder:little room}"
+        },
+        "isBackground": true,
+        "problemMatcher": {
+          "pattern": {
+            "regexp": "^(.*)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "stripe",
+            "endsPattern": "Ready"
+          }
+        },
+        "presentation": {
+          "group": "servers",
+          "panel": "dedicated",
+          "reveal": "always"
+        }
+      },
+      {
+        "label": "Start all servers",
+        "dependsOn": [
+          "Backend: Django dev server",
+          "Frontend: Astro dev server",
+          "Stripe: webhook listener"
+        ],
+        "dependsOrder": "parallel",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
+}
