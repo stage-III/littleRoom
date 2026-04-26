@@ -100,38 +100,46 @@
   .step { max-width: 520px; }
 
   h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--text);
     margin-bottom: 0.35rem;
-    letter-spacing: -0.01em;
   }
 
   .sub {
-    font-size: 0.875rem;
-    color: #666;
-    margin-bottom: 1.5rem;
+    font-family: var(--font-ui);
+    font-weight: 300;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 1.75rem;
   }
 
   .slot-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
     margin-bottom: 1.5rem;
   }
 
   .slot-btn {
     padding: 0.45rem 0.875rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    background: #fff;
-    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.875rem;
     font-family: inherit;
     cursor: pointer;
-    transition: border-color 0.1s, background 0.1s;
+    transition: border-color 0.1s, background 0.1s, color 0.1s;
+    letter-spacing: 0.04em;
   }
 
-  .slot-btn:hover { border-color: #1a1a1a; }
-  .slot-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .slot-btn:hover { border-color: var(--accent); color: var(--text); }
+  .slot-btn.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
   .duration-row {
     display: flex;
@@ -139,41 +147,48 @@
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 1rem 1.25rem;
-    background: #f9f9f9;
-    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
   }
 
-  .dur-label { font-size: 0.875rem; font-weight: 500; white-space: nowrap; }
+  .dur-label {
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--silver);
+    white-space: nowrap;
+  }
 
   .dur-options { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
   .dur-btn {
     padding: 0.35rem 0.75rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    background: #fff;
-    font-size: 0.875rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.825rem;
     font-family: inherit;
     cursor: pointer;
-    transition: border-color 0.1s, background 0.1s;
+    transition: border-color 0.1s, background 0.1s, color 0.1s;
+    letter-spacing: 0.04em;
   }
 
-  .dur-btn:hover { border-color: #1a1a1a; }
-  .dur-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .dur-btn:hover { border-color: var(--accent); color: var(--text); }
+  .dur-btn.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
   .summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
-    color: #333;
-    padding: 0.6rem 1.25rem;
-    background: #f0f0f0;
-    border-radius: 4px;
+    font-size: 0.875rem;
+    color: var(--text);
+    padding: 0.65rem 1.25rem;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
     margin-bottom: 1.5rem;
   }
 
-  .summary-price { font-weight: 600; }
+  .summary-price { font-weight: 700; color: var(--accent); letter-spacing: 0.04em; }
 
   .actions {
     display: flex;
@@ -184,27 +199,31 @@
   .back {
     background: none;
     border: none;
-    color: #555;
-    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     padding: 0;
+    transition: color 0.15s;
   }
 
-  .back:hover { color: #1a1a1a; }
+  .back:hover { color: var(--text); }
 
   .next {
     padding: 0.7rem 1.75rem;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: 1px solid var(--accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.15s;
   }
 
-  .next:hover:not(:disabled) { background: #333; }
-  .next:disabled { opacity: 0.5; cursor: not-allowed; }
+  .next:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .next:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>

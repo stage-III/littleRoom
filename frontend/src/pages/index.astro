@@ -53,27 +53,55 @@ try {
 <style>
   .hero {
     text-align: center;
-    padding: 4rem 0 3rem;
-    border-bottom: 1px solid #e5e5e5;
-    margin-bottom: 3rem;
+    padding: 5rem 0 4rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3.5rem;
   }
 
-  .hero h1 { font-size: 3rem; letter-spacing: -0.04em; margin-bottom: 1rem; }
-  .hero p { font-size: 1.1rem; color: #555; margin-bottom: 2rem; }
+  .hero h1 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 3.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+  }
 
   .btn {
     display: inline-block;
-    background: #1a1a1a;
-    color: #fff;
-    padding: 0.75rem 2rem;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    padding: 0.8rem 2.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     transition: background 0.15s;
+    border: 1px solid var(--accent);
   }
-  .btn:hover { background: #333; }
+  .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
   section { margin-bottom: 4rem; }
-  h2 { font-size: 1.4rem; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+
+  h2 {
+    font-family: var(--font-ui);
+    font-weight: 300;
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
 
   .room-grid {
     display: grid;
@@ -86,12 +114,27 @@ try {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 2rem;
     padding: 2rem;
-    background: #f9f9f9;
-    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
   }
 
   .info h2 { margin-bottom: 0.75rem; }
-  address { font-style: normal; line-height: 1.8; color: #444; }
+  address {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.9;
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
 
-  .empty { color: #888; }
+  .about p, .info p {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  .empty { color: var(--text-faint); }
 </style>

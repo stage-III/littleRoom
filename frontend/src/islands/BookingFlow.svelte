@@ -172,23 +172,22 @@
 <style>
   .booking-flow {
     max-width: 560px;
+    margin: 0 auto;
   }
 
   .progress {
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    margin-bottom: 2rem;
-    font-size: 0.8rem;
+    margin-bottom: 2.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 
-  .progress-step {
-    color: #bbb;
-    font-weight: 500;
-  }
+  .progress-step { color: var(--text-faint); }
+  .progress-step.done { color: var(--text-muted); }
+  .progress-step.active { color: var(--accent); }
 
-  .progress-step.done { color: #888; }
-  .progress-step.active { color: #1a1a1a; font-weight: 600; }
-
-  .progress-sep { color: #ccc; font-size: 0.75rem; }
+  .progress-sep { color: var(--text-faint); font-size: 0.65rem; }
 </style>

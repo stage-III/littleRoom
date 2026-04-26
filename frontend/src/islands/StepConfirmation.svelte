@@ -49,44 +49,53 @@
   .confirmation { max-width: 420px; }
 
   .panel {
-    background: #f0faf0;
-    border: 1px solid #b0ddb0;
-    border-radius: 8px;
+    background: var(--ok-bg);
+    border: 1px solid var(--ok-border);
     padding: 2rem 2rem 1.75rem;
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
   }
 
   .tick {
-    font-size: 2rem;
-    color: #2a7a2a;
+    font-size: 1.5rem;
+    color: var(--ok-text);
     margin-bottom: 0.75rem;
+    letter-spacing: 0.1em;
   }
 
   h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.25rem;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--ok-text);
+    margin-bottom: 1.5rem;
   }
 
   .booking-room {
-    font-weight: 600;
+    font-family: var(--font-title);
+    font-weight: 700;
     font-size: 1rem;
-    margin-bottom: 0.3rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 0.4rem;
   }
 
   .booking-date,
   .booking-time {
-    font-size: 0.9rem;
-    color: #444;
+    font-size: 0.875rem;
+    color: var(--text-muted);
     margin-bottom: 0.25rem;
+    letter-spacing: 0.03em;
   }
 
   .booking-payment {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    margin-top: 0.6rem;
+    letter-spacing: 0.06em;
   }
 
   .actions {
@@ -98,27 +107,29 @@
 
   .btn-primary {
     padding: 0.65rem 1.5rem;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: 1px solid var(--accent);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.15s;
   }
 
-  .btn-primary:hover { background: #333; }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
   .btn-secondary {
     padding: 0.65rem 1.5rem;
-    background: #fff;
-    color: #1a1a1a;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    transition: border-color 0.15s;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: border-color 0.15s, color 0.15s;
   }
 
-  .btn-secondary:hover { border-color: #1a1a1a; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--text); }
 </style>

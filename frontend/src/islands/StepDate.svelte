@@ -59,10 +59,13 @@
   .step { max-width: 400px; }
 
   h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.01em;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 1.75rem;
   }
 
   .field {
@@ -72,42 +75,49 @@
     margin-bottom: 1.25rem;
   }
 
-  label { font-size: 0.875rem; font-weight: 500; }
+  label {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
 
   input[type="date"] {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.95rem;
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s;
+    color-scheme: dark;
   }
 
-  input[type="date"]:focus { border-color: #1a1a1a; }
+  input[type="date"]:focus { border-color: var(--accent); }
 
   .notice {
-    font-size: 0.9rem;
-    color: #b06000;
-    background: #fffbf0;
-    border: 1px solid #f0d080;
-    border-radius: 4px;
-    padding: 0.6rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--warn-text);
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    padding: 0.65rem 0.875rem;
     margin-bottom: 1.25rem;
   }
 
   button {
     padding: 0.7rem 1.75rem;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: 1px solid var(--accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.15s;
   }
 
-  button:hover:not(:disabled) { background: #333; }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>

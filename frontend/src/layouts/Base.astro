@@ -10,6 +10,9 @@ const { title } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Barlow:wght@400&family=Josefin+Sans:wght@700&display=swap" rel="stylesheet" />
     <title>{title} | Little Room</title>
   </head>
   <body>
@@ -35,12 +38,39 @@ const { title } = Astro.props;
 </html>
 
 <style is:global>
+  :root {
+    --bg:            #0e1012;
+    --surface:       #181c1e;
+    --surface-2:     #1f2426;
+    --border:        #2a3035;
+    --font-title: 'Josefin Sans', sans-serif;
+    --font-ui:    'Barlow Condensed', 'Helvetica Neue', Arial, sans-serif;
+    --accent:        #a9d4e8;
+    --accent-hover:  #bcdff2;
+    --accent-dim:    #0d1e28;
+    --accent-fg:     #0e1012;
+    --text:          #d8e0e3;
+    --text-muted:    #6b7c82;
+    --text-faint:    #3a4a50;
+    --silver:        #8a9ea6;
+    --err-bg:        #180f0f;
+    --err-border:    #4d1a1a;
+    --err-text:      #d95555;
+    --warn-bg:       #1a1508;
+    --warn-border:   #4a3800;
+    --warn-text:     #c89830;
+    --ok-bg:         #091a12;
+    --ok-border:     #0d4028;
+    --ok-text:       #35b872;
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: system-ui, sans-serif;
-    color: #1a1a1a;
-    background: #fff;
+    font-family: var(--font-ui);
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -48,9 +78,15 @@ const { title } = Astro.props;
 
   a { color: inherit; text-decoration: none; }
 
+  button {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+  }
+
   header {
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--border);
     padding: 0 2rem;
+    background: var(--surface);
   }
 
   nav {
@@ -62,16 +98,28 @@ const { title } = Astro.props;
     height: 60px;
   }
 
-  nav .logo { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
+  nav .logo {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
 
   nav ul {
     list-style: none;
     display: flex;
     gap: 2rem;
-    font-size: 0.9rem;
+    font-family: var(--font-ui);
+    font-weight: 300;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
 
-  nav ul a:hover { text-decoration: underline; }
+  nav ul a:hover { color: var(--text); }
 
   main {
     flex: 1;
@@ -82,10 +130,13 @@ const { title } = Astro.props;
   }
 
   footer {
-    border-top: 1px solid #e5e5e5;
+    border-top: 1px solid var(--border);
     padding: 1.5rem 2rem;
     text-align: center;
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    background: var(--surface);
   }
 </style>

@@ -56,8 +56,14 @@
       const elements = s.elements();
       const card = elements.create('card', {
         style: {
-          base: { fontFamily: 'inherit', fontSize: '16px', color: '#1a1a1a' },
-          invalid: { color: '#c00' },
+          base: {
+            fontFamily: 'inherit',
+            fontSize: '15px',
+            color: '#d8e0e3',
+            '::placeholder': { color: '#3a4a50' },
+            backgroundColor: '#1f2426',
+          },
+          invalid: { color: '#d95555' },
         },
       });
       card.mount(cardContainer);
@@ -166,17 +172,20 @@
   .step { max-width: 480px; }
 
   h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.01em;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 1.75rem;
   }
 
   .summary-card {
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
     padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -185,21 +194,28 @@
   .summary-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
-    color: #444;
+    font-size: 0.875rem;
+    color: var(--text-muted);
   }
 
   .summary-row.main { margin-bottom: 0.25rem; }
 
-  .room-name { font-weight: 600; font-size: 1rem; color: #1a1a1a; }
-  .price { font-weight: 600; font-size: 1rem; color: #1a1a1a; }
-  .muted { color: #888; }
+  .room-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .price { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
+  .muted { color: var(--text-faint); }
 
-  .guest-section { margin-bottom: 1.5rem; }
+  .guest-section { margin-bottom: 1.75rem; }
 
   .guest-note {
-    font-size: 0.875rem;
-    color: #555;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: var(--text-faint);
     margin-bottom: 1rem;
   }
 
@@ -210,38 +226,48 @@
     margin-bottom: 1rem;
   }
 
-  label { font-size: 0.875rem; font-weight: 500; }
+  label {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
 
   input[type="text"],
   input[type="email"] {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.95rem;
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s;
   }
 
   input[type="text"]:focus,
-  input[type="email"]:focus { border-color: #1a1a1a; }
+  input[type="email"]:focus { border-color: var(--accent); }
 
-  .payment-section { margin-bottom: 1.5rem; }
+  .payment-section { margin-bottom: 1.75rem; }
 
   .section-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--silver);
+    margin-bottom: 0.875rem;
   }
 
   .radio-label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     cursor: pointer;
     font-weight: normal;
+    letter-spacing: 0.03em;
   }
 
   .card-field {
@@ -251,32 +277,37 @@
     gap: 0.4rem;
   }
 
-  .card-label { font-size: 0.875rem; font-weight: 500; }
+  .card-label {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
 
   .card-element {
     padding: 0.65rem 0.75rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     transition: border-color 0.15s;
   }
 
-  .card-element:focus-within { border-color: #1a1a1a; }
+  .card-element:focus-within { border-color: var(--accent); }
 
-  .card-error { font-size: 0.8rem; color: #c00; }
+  .card-error { font-size: 0.8rem; color: var(--err-text); }
 
   .payment-note {
-    font-size: 0.8rem;
-    color: #888;
+    font-size: 0.78rem;
+    color: var(--text-faint);
     margin-top: 0.75rem;
+    letter-spacing: 0.03em;
   }
 
   .error-banner {
-    background: #fff0f0;
-    border: 1px solid #fcc;
-    color: #c00;
+    background: var(--err-bg);
+    border: 1px solid var(--err-border);
+    color: var(--err-text);
     padding: 0.75rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }
 
@@ -289,28 +320,32 @@
   .back {
     background: none;
     border: none;
-    color: #555;
-    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     padding: 0;
+    transition: color 0.15s;
   }
 
-  .back:hover:not(:disabled) { color: #1a1a1a; }
+  .back:hover:not(:disabled) { color: var(--text); }
   .back:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .submit {
     padding: 0.7rem 1.75rem;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: 1px solid var(--accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.15s;
   }
 
-  .submit:hover:not(:disabled) { background: #333; }
-  .submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .submit:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .submit:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>

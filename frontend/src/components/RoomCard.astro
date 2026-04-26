@@ -29,21 +29,25 @@ const { room } = Astro.props;
 
 <style>
   .room-card {
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    border: 1px solid var(--border);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    background: var(--surface);
+    transition: border-color 0.15s;
   }
 
+  .room-card:hover { border-color: var(--accent); }
+
   .room-image {
-    background: #f0f0f0;
+    background: var(--surface-2);
     height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: #bbb;
+    color: var(--text-faint);
+    border-bottom: 1px solid var(--border);
   }
 
   .room-body {
@@ -54,11 +58,31 @@ const { room } = Astro.props;
     flex: 1;
   }
 
-  h3 { font-size: 1.1rem; letter-spacing: -0.02em; }
+  h3 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
 
-  .meta { font-size: 0.85rem; color: #888; }
+  .meta {
+    font-family: var(--font-ui);
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
 
-  .description { font-size: 0.9rem; color: #555; line-height: 1.5; }
+  .description {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
 
   .equipment {
     list-style: none;
@@ -68,16 +92,19 @@ const { room } = Astro.props;
   }
 
   .equipment li {
-    font-size: 0.8rem;
-    color: #666;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--silver);
     padding-left: 0.75rem;
     position: relative;
   }
 
   .equipment li::before {
-    content: '–';
+    content: '—';
     position: absolute;
     left: 0;
+    color: var(--text-faint);
   }
 
   .footer {
@@ -86,18 +113,26 @@ const { room } = Astro.props;
     justify-content: space-between;
     margin-top: auto;
     padding-top: 0.75rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--border);
   }
 
-  .rate { font-weight: 600; font-size: 0.95rem; }
+  .rate {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
 
   .btn-book {
-    background: #1a1a1a;
-    color: #fff;
-    padding: 0.4rem 1rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    padding: 0.4rem 1.1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    transition: background 0.15s;
   }
 
-  .btn-book:hover { background: #333; }
+  .btn-book:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 </style>
