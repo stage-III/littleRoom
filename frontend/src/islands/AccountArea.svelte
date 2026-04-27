@@ -133,7 +133,7 @@
   h1 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 2rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--accent);
@@ -142,7 +142,7 @@
   h2 {
     font-family: var(--font-ui);
     font-weight: 300;
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.14em;
@@ -155,7 +155,7 @@
     background: none;
     border: 1px solid var(--border);
     padding: 0.4rem 0.9rem;
-    font-size: 0.7rem;
+    font-size: 0.97rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     font-family: inherit;
@@ -216,14 +216,14 @@
   .booking-room {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.4rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
   }
 
   .booking-time {
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     color: var(--text-muted);
     display: flex;
     gap: 0.75rem;
@@ -243,7 +243,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     margin-top: 0.15rem;
     letter-spacing: 0.04em;
   }

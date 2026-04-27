@@ -174,7 +174,7 @@
   h2 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -194,7 +194,7 @@
   .summary-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.875rem;
+    font-size: 1.05rem;
     color: var(--text-muted);
   }
 
@@ -202,18 +202,18 @@
 
   .room-name {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text);
   }
-  .price { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
+  .price { font-weight: 700; font-size: 1.05rem; color: var(--accent); }
   .muted { color: var(--text-faint); }
 
   .guest-section { margin-bottom: 1.75rem; }
 
   .guest-note {
-    font-size: 0.8rem;
+    font-size: 0.97rem;
     letter-spacing: 0.04em;
     color: var(--text-faint);
     margin-bottom: 1rem;
@@ -227,7 +227,7 @@
   }
 
   label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--silver);
@@ -239,7 +239,7 @@
     border: 1px solid var(--border);
     background: var(--surface-2);
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s;
@@ -251,7 +251,7 @@
   .payment-section { margin-bottom: 1.75rem; }
 
   .section-label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--silver);
@@ -262,7 +262,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.97rem;
     color: var(--text-muted);
     margin-bottom: 0.5rem;
     cursor: pointer;
@@ -278,7 +278,7 @@
   }
 
   .card-label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--silver);
@@ -296,7 +296,7 @@
   .card-error { font-size: 0.8rem; color: var(--err-text); }
 
   .payment-note {
-    font-size: 0.78rem;
+    font-size: 0.97rem;
     color: var(--text-faint);
     margin-top: 0.75rem;
     letter-spacing: 0.03em;
@@ -307,7 +307,7 @@
     border: 1px solid var(--err-border);
     color: var(--err-text);
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    font-size: 0.97rem;
     margin-bottom: 1.25rem;
   }
 
@@ -321,7 +321,7 @@
     background: none;
     border: none;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.97rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     font-family: inherit;
@@ -338,7 +338,7 @@
     background: var(--accent);
     color: var(--accent-fg);
     border: 1px solid var(--accent);
-    font-size: 0.78rem;
+    font-size: 0.97rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-family: inherit;

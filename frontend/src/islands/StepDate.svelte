@@ -61,7 +61,7 @@
   h2 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -76,7 +76,7 @@
   }
 
   label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--silver);
@@ -87,7 +87,7 @@
     border: 1px solid var(--border);
     background: var(--surface-2);
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s;
@@ -97,7 +97,7 @@
   input[type="date"]:focus { border-color: var(--accent); }
 
   .notice {
-    font-size: 0.875rem;
+    font-size: 0.97rem;
     color: var(--warn-text);
     background: var(--warn-bg);
     border: 1px solid var(--warn-border);
@@ -110,7 +110,8 @@
     background: var(--accent);
     color: var(--accent-fg);
     border: 1px solid var(--accent);
-    font-size: 0.78rem;
+    font-size: 0.97rem;
+    font-weight: 400;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-family: inherit;

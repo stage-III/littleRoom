@@ -42,7 +42,7 @@
   h2 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -52,7 +52,7 @@
   .sub {
     font-family: var(--font-ui);
     font-weight: 300;
-    font-size: 0.95rem;
+    font-size: 1.4rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-faint);
@@ -60,7 +60,7 @@
   }
 
   .notice {
-    font-size: 0.875rem;
+    font-size: 0.97rem;
     color: var(--text-muted);
     margin-bottom: 1.5rem;
   }
@@ -93,7 +93,7 @@
   .room-name {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -103,7 +103,7 @@
   .room-meta {
     font-family: var(--font-ui);
     font-weight: 300;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
     color: var(--text-muted);
     display: flex;
     gap: 0.4rem;
@@ -117,7 +117,8 @@
     background: none;
     border: none;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.97rem;
+    font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     font-family: inherit;

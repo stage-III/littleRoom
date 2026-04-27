@@ -1,35 +1,39 @@
 <script lang="ts">
-  import type { Booking } from '../lib/api';
+  import type { Booking } from "../lib/api";
 
-  let { booking, isLoggedIn }: {
+  let {
+    booking,
+    isLoggedIn,
+  }: {
     booking: Booking;
     isLoggedIn: boolean;
   } = $props();
 
-  const timeFmt = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
-    hour: '2-digit',
-    minute: '2-digit',
+  const timeFmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: false,
   });
 
-  const dateFmt = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+  const dateFmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 
   const start = $derived(new Date(booking.start_datetime));
   const end = $derived(new Date(booking.end_datetime));
 
-  const methodLabel = $derived(booking.payment_method === 'ON_DAY' ? 'Pay on the day' : 'Upfront');
+  const methodLabel = $derived(
+    booking.payment_method === "ON_DAY" ? "Pay on the day" : "Upfront",
+  );
 </script>
 
 <div class="confirmation">
   <div class="panel">
-    <div class="tick">✓</div>
     <h2>Booking confirmed!</h2>
     <p class="booking-room">{booking.room.name}</p>
     <p class="booking-date">{dateFmt.format(start)}</p>
@@ -41,12 +45,16 @@
     {#if isLoggedIn}
       <a href="/account" class="btn-secondary">View your bookings</a>
     {/if}
-    <button class="btn-primary" onclick={() => window.location.reload()}>Book another room</button>
+    <button class="btn-primary" onclick={() => window.location.reload()}
+      >Book another room</button
+    >
   </div>
 </div>
 
 <style>
-  .confirmation { max-width: 420px; }
+  .confirmation {
+    max-width: 420px;
+  }
 
   .panel {
     background: var(--ok-bg);
@@ -56,17 +64,10 @@
     margin-bottom: 1.75rem;
   }
 
-  .tick {
-    font-size: 1.5rem;
-    color: var(--ok-text);
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.1em;
-  }
-
   h2 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--ok-text);
@@ -76,7 +77,7 @@
   .booking-room {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.4rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -85,14 +86,14 @@
 
   .booking-date,
   .booking-time {
-    font-size: 0.875rem;
+    font-size: 1.05rem;
     color: var(--text-muted);
     margin-bottom: 0.25rem;
     letter-spacing: 0.03em;
   }
 
   .booking-payment {
-    font-size: 0.75rem;
+    font-size: 1.05rem;
     color: var(--text-faint);
     margin-top: 0.6rem;
     letter-spacing: 0.06em;
@@ -110,7 +111,7 @@
     background: var(--accent);
     color: var(--accent-fg);
     border: 1px solid var(--accent);
-    font-size: 0.75rem;
+    font-size: 1.05rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-family: inherit;
@@ -118,18 +119,26 @@
     transition: background 0.15s;
   }
 
-  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
 
   .btn-secondary {
     padding: 0.65rem 1.5rem;
     background: transparent;
     color: var(--text-muted);
     border: 1px solid var(--border);
-    font-size: 0.75rem;
+    font-size: 1.05rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
   }
 
-  .btn-secondary:hover { border-color: var(--accent); color: var(--text); }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
 </style>

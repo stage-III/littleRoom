@@ -84,7 +84,7 @@
   h1 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 2rem;
     text-transform: lowercase;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -96,7 +96,7 @@
     border: 1px solid var(--err-border);
     color: var(--err-text);
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    font-size: 0.975rem;
     margin-bottom: 1.5rem;
   }
 
@@ -108,7 +108,7 @@
   }
 
   label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--silver);
@@ -140,7 +140,7 @@
     background: var(--accent);
     color: var(--accent-fg);
     border: 1px solid var(--accent);
-    font-size: 0.78rem;
+    font-size: 1.05rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     font-family: inherit;
@@ -155,7 +155,7 @@
   .switch {
     text-align: center;
     margin-top: 1.75rem;
-    font-size: 0.78rem;
+    font-size: 0.93rem;
     letter-spacing: 0.06em;
     color: var(--text-muted);
   }
