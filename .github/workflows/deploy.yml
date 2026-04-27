@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  IMAGE_PREFIX: ghcr.io/stage-III/littleroom
+  IMAGE_PREFIX: ghcr.io/stage-iii/littleroom
 
 jobs:
   build-and-push:
