@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+  IMAGE_PREFIX: ghcr.io/stage-III/littleroom
 
 jobs:
   build-and-push:
