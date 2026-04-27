@@ -4,11 +4,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: move to environment variable before deploying
-SECRET_KEY = 'django-insecure-p@7safm%x^+3=c)$lgq7sxvs%3n)gdb5n#yyp9&63u4!#er8q1'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-p@7safm%x^+3=c)$lgq7sxvs%3n)gdb5n#yyp9&63u4!#er8q1')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'true').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 INSTALLED_APPS = [
@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
     'django.contrib.sites',
 
     # Third-party
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,11 +77,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'littleroom',
-        'USER': 'littleroom',
-        'PASSWORD': 'littleroom_dev',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'littleroom'),
+        'USER': os.environ.get('DB_USER', 'littleroom'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'littleroom_dev'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
@@ -103,15 +105,14 @@ REST_FRAMEWORK = {
 
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*', 'username']
 ACCOUNT_ADAPTER = 'accounts.adapter.AccountAdapter'
-FRONTEND_URL = 'http://localhost:4321'
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:4321')
 ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'mandatory')
 
-EMAIL_BACKEND = 'config.email_backend.DevConsoleEmailBackend'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'config.email_backend.DevConsoleEmailBackend')
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4321',  # Astro dev server
-]
+_cors = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:4321')
+CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(',') if o.strip()]
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -126,6 +127,11 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 SILENCED_SYSTEM_CHECKS = [
     'models.W036',  # MariaDB conditional unique constraints (handled by allauth in app logic)
