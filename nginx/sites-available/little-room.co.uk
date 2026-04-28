@@ -1,6 +1,17 @@
 server {
     listen 80;
     server_name little-room.co.uk www.little-room.co.uk;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name little-room.co.uk www.little-room.co.uk;
+
+    ssl_certificate     /etc/letsencrypt/live/little-room.co.uk/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/little-room.co.uk/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
 
     root /usr/share/nginx/html;
     index index.html;
