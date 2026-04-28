@@ -17,7 +17,7 @@ RUN npm run build
 # Stage 2: serve with nginx
 FROM nginx:alpine
 
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/sites-available/little-room.co.uk /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
