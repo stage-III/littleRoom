@@ -114,6 +114,8 @@ EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'config.email_backend.DevConsole
 _cors = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:4321')
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(',') if o.strip()]
 
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
