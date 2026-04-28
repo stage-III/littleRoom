@@ -1,13 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import RoomCard from '../components/RoomCard.astro';
-import type { Room } from '../lib/api';
-
-let rooms: Room[] = [];
-try {
-  const res = await fetch(`${import.meta.env.PUBLIC_API_URL ?? 'http://127.0.0.1:8000/api'}/rooms/`);
-  if (res.ok) rooms = await res.json();
-} catch { /* server may not be running at build time */ }
+import RoomsGrid from '../islands/RoomsGrid.svelte';
 ---
 
 <Base title="Studio">
@@ -20,8 +13,8 @@ try {
   <section class="about">
     <h2>The Studio</h2>
     <p>
-      Little Room is a musician-run rehearsal space with {rooms.length > 0 ? rooms.length : 'several'}
-      fully equipped rooms available for hourly hire. Unlimited tea to fuel your jams, and helpful staff
+      Little Room is a musician-run rehearsal space with several fully equipped rooms available for hourly hire.
+      Unlimited tea to fuel your jams, and helpful staff
       on hand should anything come up.<br /><br />
       Drop us an email if you have any questions or special requirements :)
     </p>
@@ -29,10 +22,7 @@ try {
 
   <section class="rooms">
     <h2>Rooms</h2>
-    <div class="room-grid">
-      {rooms.map(room => <RoomCard room={room} />)}
-      {rooms.length === 0 && <p class="empty">No rooms listed yet — check back soon.</p>}
-    </div>
+    <RoomsGrid client:load />
   </section>
 
   <section class="info">
@@ -105,11 +95,6 @@ try {
     border-bottom: 1px solid var(--border);
   }
 
-  .room-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
 
   .info {
     display: grid;
@@ -138,5 +123,4 @@ try {
     color: var(--text-muted);
   }
 
-  .empty { color: var(--text-faint); }
 </style>
