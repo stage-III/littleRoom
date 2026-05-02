@@ -1,43 +1,12 @@
 server {
     listen 80;
-    server_name little-room.co.uk www.little-room.co.uk;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name little-room.co.uk www.little-room.co.uk;
-
-    ssl_certificate     /etc/letsencrypt/live/little-room.co.uk/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/little-room.co.uk/privkey.pem;
-    ssl_protocols       TLSv1.2 TLSv1.3;
-    ssl_ciphers         HIGH:!aNULL:!MD5;
-
+    server_name _;
     root /usr/share/nginx/html;
     index index.html;
 
-    location /api/ {
-        proxy_pass         http://backend:8000;
-        proxy_set_header   Host              $host;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-    }
-
-    location /waynesworld/ {
-        proxy_pass         http://backend:8000;
-        proxy_set_header   Host              $host;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-    }
-
-    location /static/ {
-        proxy_pass         http://backend:8000;
-        proxy_set_header   Host              $host;
-    }
+    error_page 404 /404.html;
 
     location / {
-        try_files $uri $uri/ /index.html;
+        try_files $uri $uri/ =404;
     }
 }

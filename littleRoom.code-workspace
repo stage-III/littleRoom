@@ -3,14 +3,6 @@
     {
       "name": "little room",
       "path": "."
-    },
-    {
-      "name": "backend",
-      "path": "backend"
-    },
-    {
-      "name": "frontend",
-      "path": "frontend"
     }
   ],
   "settings": {
