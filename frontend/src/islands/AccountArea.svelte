@@ -175,7 +175,7 @@
   }
 
   .loading-msg {
-    color: var(--text-faint);
+    color: var(--text-muted);
     font-size: 0.875rem;
   }
 
@@ -188,7 +188,7 @@
   }
 
   .empty {
-    color: var(--text-faint);
+    color: var(--text-muted);
     font-size: 0.875rem;
   }
 
@@ -249,7 +249,7 @@
   }
 
   .sep {
-    color: var(--text-faint);
+    color: var(--text-muted);
   }
 
   .tag {
@@ -257,6 +257,6 @@
   }
 
   .status-paid { color: var(--ok-text); }
-  .status-refunded { color: var(--text-faint); }
+  .status-refunded { color: var(--text-muted); }
   .status-pending { color: var(--warn-text); }
 </style>

@@ -94,7 +94,7 @@
 
   .booking-payment {
     font-size: 1.05rem;
-    color: var(--text-faint);
+    color: var(--text-muted);
     margin-top: 0.6rem;
     letter-spacing: 0.06em;
   }

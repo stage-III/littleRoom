@@ -115,7 +115,7 @@
     font-size: 1.4rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-faint);
+    color: var(--text-muted);
     margin-bottom: 1.75rem;
   }
 

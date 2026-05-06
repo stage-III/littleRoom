@@ -55,7 +55,7 @@
     font-size: 1.4rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-faint);
+    color: var(--text-muted);
     margin-bottom: 1.75rem;
   }
 
@@ -111,7 +111,7 @@
     text-transform: uppercase;
   }
 
-  .sep { color: var(--text-faint); }
+  .sep { color: var(--text-muted); }
 
   .back {
     background: none;

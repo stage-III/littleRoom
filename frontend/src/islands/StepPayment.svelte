@@ -208,14 +208,14 @@
     color: var(--text);
   }
   .price { font-weight: 700; font-size: 1.05rem; color: var(--accent); }
-  .muted { color: var(--text-faint); }
+  .muted { color: var(--text-muted); }
 
   .guest-section { margin-bottom: 1.75rem; }
 
   .guest-note {
     font-size: 0.97rem;
     letter-spacing: 0.04em;
-    color: var(--text-faint);
+    color: var(--text-muted);
     margin-bottom: 1rem;
   }
 
@@ -297,7 +297,7 @@
 
   .payment-note {
     font-size: 0.97rem;
-    color: var(--text-faint);
+    color: var(--text-muted);
     margin-top: 0.75rem;
     letter-spacing: 0.03em;
   }

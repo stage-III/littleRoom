@@ -185,9 +185,9 @@
     text-transform: uppercase;
   }
 
-  .progress-step { color: var(--text-faint); }
+  .progress-step { color: var(--text-muted); }
   .progress-step.done { color: var(--text-muted); }
   .progress-step.active { color: var(--accent); }
 
-  .progress-sep { color: var(--text-faint); font-size: 1.85rem; }
+  .progress-sep { color: var(--text-muted); font-size: 1.85rem; }
 </style>

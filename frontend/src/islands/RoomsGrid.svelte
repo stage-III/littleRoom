@@ -48,7 +48,7 @@
 
 <style>
   .status {
-    color: var(--text-faint);
+    color: var(--text-muted);
     font-size: 0.875rem;
   }
 
@@ -76,7 +76,7 @@
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: var(--text-faint);
+    color: var(--text-muted);
     border-bottom: 1px solid var(--border);
   }
 
@@ -134,7 +134,7 @@
     content: '—';
     position: absolute;
     left: 0;
-    color: var(--text-faint);
+    color: var(--text-muted);
   }
 
   .footer {
