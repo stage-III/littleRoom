@@ -15,4 +15,5 @@ dependencies = [
     "django-cors-headers>=4.6",
     "gunicorn>=23.0",
     "whitenoise>=6.8",
+    "django-anymail[resend]>=15.0",
 ]

@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'solo',
+    'anymail',
 
     # Local
     'accounts',
@@ -110,6 +111,10 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'mandatory')
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'config.email_backend.DevConsoleEmailBackend')
+ANYMAIL = {
+    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
+}
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@little-room.co.uk')
 
 _cors = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:4321')
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(',') if o.strip()]
