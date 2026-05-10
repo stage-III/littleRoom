@@ -81,10 +81,10 @@ class RoomImageCompressionTests(TestCase):
         with Image.open(room.image.path) as img:
             self.assertEqual(img.width, 400)
 
-    def test_image_is_converted_to_jpeg(self):
+    def test_image_is_converted_to_webp(self):
         room = self._room_with_image(400, 300)
         with Image.open(room.image.path) as img:
-            self.assertEqual(img.format, 'JPEG')
+            self.assertEqual(img.format, 'WEBP')
 
     def test_aspect_ratio_preserved_on_resize(self):
         room = self._room_with_image(1600, 800)

@@ -23,7 +23,7 @@ class Room(models.Model):
             if img.width > 800:
                 ratio = 800 / img.width
                 img = img.resize((800, int(img.height * ratio)), Image.LANCZOS)
-            img.save(self.image.path, format='JPEG', quality=85, optimize=True)
+            img.save(self.image.path, format='WEBP', quality=85)
 
 
 class Equipment(models.Model):
