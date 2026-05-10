@@ -23,7 +23,11 @@
     {#each rooms as room}
       <article class="room-card">
         <div class="room-image">
-          <span class="placeholder">📷</span>
+          {#if room.image}
+            <img src={room.image} alt={room.name} />
+          {:else}
+            <span class="placeholder">📷</span>
+          {/if}
         </div>
         <div class="room-body">
           <h3>{room.name}</h3>
@@ -78,6 +82,13 @@
     font-size: 2rem;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .room-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .room-body {

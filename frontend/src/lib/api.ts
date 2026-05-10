@@ -38,6 +38,7 @@ export interface Room {
   size_sqm: number | null;
   hourly_rate: string;
   equipment: Equipment[];
+  image: string | null;
 }
 
 export interface Slot {

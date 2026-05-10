@@ -28,6 +28,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - media_data:/app/media
     networks:
       - internal
       - proxy
@@ -48,3 +50,4 @@ networks:
 
 volumes:
   db_data:
+  media_data:
