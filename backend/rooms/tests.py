@@ -1,5 +1,6 @@
 import io
 import tempfile
+from pathlib import Path
 
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
@@ -94,3 +95,16 @@ class RoomImageCompressionTests(TestCase):
         room = self._room_with_image(1600, 800)
         with Image.open(room.image.path) as img:
             self.assertAlmostEqual(img.width / img.height, 2.0, places=1)
+
+    def test_old_file_deleted_when_image_replaced(self):
+        room = self._room_with_image(400, 300)
+        old_path = room.image.path
+        room.image.save('new.png', make_png(400, 300), save=True)
+        self.assertFalse(Path(old_path).exists())
+
+    def test_old_file_deleted_when_image_cleared(self):
+        room = self._room_with_image(400, 300)
+        old_path = room.image.path
+        room.image = None
+        room.save()
+        self.assertFalse(Path(old_path).exists())

@@ -14,10 +14,18 @@ class Room(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.image:
-            from pathlib import Path
+        from pathlib import Path
 
+        old_image_name = None
+        if self.pk:
+            try:
+                old_image_name = type(self).objects.get(pk=self.pk).image.name or None
+            except type(self).DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+        if self.image:
             from PIL import Image
 
             old_path = Path(self.image.path)
@@ -36,6 +44,10 @@ class Room(models.Model):
             new_name = Path(self.image.name).with_suffix('.webp')
             self.image.name = str(new_name)
             type(self).objects.filter(pk=self.pk).update(image=str(new_name))
+
+        if old_image_name and old_image_name != (self.image.name if self.image else None):
+            from django.conf import settings
+            Path(settings.MEDIA_ROOT, old_image_name).unlink(missing_ok=True)
 
 
 class Equipment(models.Model):
