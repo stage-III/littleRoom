@@ -16,14 +16,26 @@ class Room(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.image:
+            from pathlib import Path
+
             from PIL import Image
 
-            img = Image.open(self.image.path)
+            old_path = Path(self.image.path)
+            img = Image.open(old_path)
             img = img.convert('RGB')
             if img.width > 800:
                 ratio = 800 / img.width
                 img = img.resize((800, int(img.height * ratio)), Image.LANCZOS)
-            img.save(self.image.path, format='WEBP', quality=85)
+
+            new_path = old_path.with_suffix('.webp')
+            img.save(new_path, format='WEBP', quality=85)
+
+            if old_path != new_path:
+                old_path.unlink(missing_ok=True)
+
+            new_name = Path(self.image.name).with_suffix('.webp')
+            self.image.name = str(new_name)
+            type(self).objects.filter(pk=self.pk).update(image=str(new_name))
 
 
 class Equipment(models.Model):
