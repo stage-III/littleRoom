@@ -6,6 +6,7 @@ class StudioSettings(SingletonModel):
     allow_pay_on_day = models.BooleanField(default=False)
     min_booking_hours = models.PositiveSmallIntegerField(default=1)
     min_notice_days = models.PositiveSmallIntegerField(default=0)
+    min_cancellation_notice_days = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
         verbose_name = 'Studio Settings'

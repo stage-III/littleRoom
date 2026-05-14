@@ -67,6 +67,7 @@ export interface StudioSettings {
   min_notice_days: number;
   allow_pay_on_day: boolean;
   min_booking_hours: number;
+  min_cancellation_notice_days: number;
 }
 
 export interface Booking {
@@ -76,6 +77,8 @@ export interface Booking {
   end_datetime: string;
   payment_method: 'UPFRONT' | 'ON_DAY';
   payment_status: 'PENDING' | 'PAID' | 'REFUNDED';
+  is_cancelled: boolean;
   created_at: string;
+  total_cost: string;
   client_secret?: string;
 }

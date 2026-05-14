@@ -3,8 +3,12 @@ from datetime import date as date_type
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import stripe
+from django.conf import settings as django_settings
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -73,8 +77,7 @@ class AvailabilityView(APIView):
             room__is_active=True,
             start_datetime__gte=day_start,
             start_datetime__lt=day_end,
-        ).exclude(
-            payment_status=Booking.PaymentStatus.REFUNDED,
+            is_cancelled=False,
         ).values('room_id', 'start_datetime', 'end_datetime').order_by('start_datetime')
 
         bookings_by_room = defaultdict(list)
@@ -155,3 +158,37 @@ class BookingMineView(generics.ListAPIView):
 
     def get_queryset(self):
         return Booking.objects.filter(user=self.request.user).select_related('room')
+
+
+class BookingCancelView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            booking = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if booking.user_id != request.user.pk:
+            raise PermissionDenied
+
+        if booking.is_cancelled:
+            return Response({'detail': 'Booking is already cancelled.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        studio = StudioSettings.get_solo()
+        cutoff = booking.start_datetime - timedelta(days=studio.min_cancellation_notice_days)
+        if timezone.now() >= cutoff:
+            return Response(
+                {'detail': f'Cancellations must be made at least {studio.min_cancellation_notice_days} day(s) before the booking.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if booking.payment_status == Booking.PaymentStatus.PAID and booking.stripe_payment_intent_id:
+            stripe.api_key = django_settings.STRIPE_SECRET_KEY
+            stripe.Refund.create(payment_intent=booking.stripe_payment_intent_id)
+            booking.payment_status = Booking.PaymentStatus.REFUNDED
+
+        booking.is_cancelled = True
+        booking.save(update_fields=['is_cancelled', 'payment_status'])
+
+        return Response(BookingListSerializer(booking).data)

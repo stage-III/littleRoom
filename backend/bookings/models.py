@@ -31,6 +31,8 @@ class Booking(models.Model):
     payment_status = models.CharField(max_length=10, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
     stripe_payment_intent_id = models.CharField(max_length=200, blank=True)
 
+    total_cost = models.DecimalField(max_digits=8, decimal_places=2)
+    is_cancelled = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

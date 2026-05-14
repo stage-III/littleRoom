@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { api, type Booking } from '../lib/api';
+  import { api, type Booking, type StudioSettings } from '../lib/api';
 
   let bookings: Booking[] = $state([]);
+  let settings = $state<StudioSettings | null>(null);
   let loading = $state(true);
   let error = $state('');
   let loggingOut = $state(false);
+  let cancellingId = $state<number | null>(null);
+  let cancelError = $state('');
 
   const dateFmt = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/London',
@@ -48,11 +51,15 @@
       return;
     }
 
-    api.get<Booking[]>('/bookings/mine/')
-      .then(data => {
-        bookings = [...data].sort(
+    Promise.all([
+      api.get<Booking[]>('/bookings/mine/'),
+      api.get<StudioSettings>('/settings/'),
+    ])
+      .then(([bookingData, settingsData]) => {
+        bookings = [...bookingData].sort(
           (a, b) => new Date(b.start_datetime).getTime() - new Date(a.start_datetime).getTime()
         );
+        settings = settingsData;
         loading = false;
       })
       .catch((err: { status?: number }) => {
@@ -65,6 +72,30 @@
         }
       });
   });
+
+  function isCancellable(booking: Booking): boolean {
+    if (booking.is_cancelled) return false;
+    if (!settings) return false;
+    const cutoff = new Date(booking.start_datetime);
+    cutoff.setDate(cutoff.getDate() - settings.min_cancellation_notice_days);
+    return new Date() < cutoff;
+  }
+
+  async function cancelBooking(booking: Booking) {
+    const notice = settings?.min_cancellation_notice_days ?? 1;
+    if (!confirm(`Cancel this booking? ${booking.payment_status === 'PAID' ? 'You will be refunded.' : ''}\n\nNote: cancellations must be made at least ${notice} day(s) before the session.`)) return;
+    cancellingId = booking.id;
+    cancelError = '';
+    try {
+      const updated = await api.post<Booking>(`/bookings/${booking.id}/cancel/`, {});
+      bookings = bookings.map(b => b.id === updated.id ? updated : b);
+    } catch (err: unknown) {
+      const e = err as { data?: { detail?: string } };
+      cancelError = e.data?.detail ?? 'Could not cancel booking. Please try again.';
+    } finally {
+      cancellingId = null;
+    }
+  }
 
   async function logout() {
     loggingOut = true;
@@ -92,22 +123,49 @@
   {:else}
     <section>
       <h2>Your Bookings</h2>
+      {#if cancelError}
+        <p class="error-banner">{cancelError}</p>
+      {/if}
       {#if bookings.length === 0}
         <p class="empty">No bookings yet.</p>
       {:else}
         <ul class="booking-list">
           {#each bookings as booking}
             {@const fmt = formatBooking(booking.start_datetime, booking.end_datetime)}
-            <li class="booking-card">
+            <li class="booking-card" class:cancelled={booking.is_cancelled}>
               <div class="booking-room">{booking.room.name}</div>
               <div class="booking-time">
                 <span class="booking-date">{fmt.date}</span>
                 <span class="booking-hours">{fmt.time} ({fmt.duration})</span>
               </div>
-              <div class="booking-meta">
-                <span class="tag">{methodLabel(booking.payment_method)}</span>
-                <span class="sep">·</span>
-                <span class="tag status-{booking.payment_status.toLowerCase()}">{statusLabel(booking.payment_status)}</span>
+              <div class="booking-footer">
+                <div class="booking-meta">
+                  {#if booking.is_cancelled}
+                    <span class="tag status-cancelled">Cancelled</span>
+                    {#if booking.payment_status === 'REFUNDED'}
+                      <span class="sep">·</span>
+                      <span class="tag status-refunded">Refunded</span>
+                    {:else if booking.payment_status === 'PAID'}
+                      <span class="sep">·</span>
+                      <span class="tag status-pending">Refund pending</span>
+                    {/if}
+                  {:else}
+                    <span class="tag">{methodLabel(booking.payment_method)}</span>
+                    <span class="sep">·</span>
+                    <span class="tag status-{booking.payment_status.toLowerCase()}">{statusLabel(booking.payment_status)}</span>
+                  {/if}
+                  <span class="sep">·</span>
+                  <span class="booking-cost">£{booking.total_cost}</span>
+                </div>
+                {#if isCancellable(booking)}
+                  <button
+                    class="cancel-btn"
+                    disabled={cancellingId === booking.id}
+                    onclick={() => cancelBooking(booking)}
+                  >
+                    {cancellingId === booking.id ? 'Cancelling…' : 'Cancel'}
+                  </button>
+                {/if}
               </div>
             </li>
           {/each}
@@ -239,6 +297,11 @@
     color: var(--silver);
   }
 
+  .booking-cost {
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+  }
+
   .booking-meta {
     display: flex;
     align-items: center;
@@ -259,4 +322,41 @@
   .status-paid { color: var(--ok-text); }
   .status-refunded { color: var(--text-muted); }
   .status-pending { color: var(--warn-text); }
+  .status-cancelled { color: var(--text-muted); }
+
+  .booking-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.15rem;
+  }
+
+  .cancel-btn {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .cancel-btn:hover:not(:disabled) {
+    border-color: var(--err-border);
+    color: var(--err-text);
+  }
+
+  .cancel-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .booking-card.cancelled {
+    opacity: 0.5;
+  }
 </style>

@@ -1,7 +1,9 @@
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from unittest.mock import MagicMock, patch
 from zoneinfo import ZoneInfo
 
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -15,17 +17,22 @@ TZ = ZoneInfo('Europe/London')
 # Monday 2026-04-27 — used as a fixed test date throughout
 TEST_DATE = date(2026, 4, 27)
 
+# A Monday well in the future for cancel tests that need a booking outside the notice window
+FUTURE_DATE = date(2027, 6, 7)
+
 
 def make_dt(hour, minute=0, d=TEST_DATE):
     return datetime(d.year, d.month, d.day, hour, minute, tzinfo=TZ)
 
 
 def make_booking(room, start_hour, end_hour, **kwargs):
+    hours = end_hour - start_hour
     return Booking.objects.create(
         room=room,
         start_datetime=make_dt(start_hour),
         end_datetime=make_dt(end_hour),
         guest_email=kwargs.pop('guest_email', 'fixture@example.com'),
+        total_cost=kwargs.pop('total_cost', Decimal(str(room.hourly_rate)) * hours),
         **kwargs,
     )
 
@@ -119,12 +126,12 @@ class AvailabilityViewTests(APITestCase):
         res = self.client.get(self.url, {'date': str(TEST_DATE)})
         self.assertEqual(res.data['rooms'][0]['slots'], [])
 
-    def test_refunded_booking_does_not_block_slot(self):
+    def test_cancelled_booking_does_not_block_slot(self):
         make_booking(self.room, start_hour=10, end_hour=11,
-                     payment_status=Booking.PaymentStatus.REFUNDED)
+                     payment_status=Booking.PaymentStatus.REFUNDED, is_cancelled=True)
         res = self.client.get(self.url, {'date': str(TEST_DATE)})
         slots = res.data['rooms'][0]['slots']
-        # The refunded slot should be available again
+        # The cancelled slot should be available again
         self.assertTrue(any('T10:00' in s['start_time'] for s in slots))
 
     def test_response_includes_studio_metadata(self):
@@ -226,6 +233,15 @@ class BookingCreateViewTests(APITestCase):
         }, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_total_cost_is_calculated_from_hours_and_rate(self):
+        # Room rate is £10/hr; 2-hour booking should store £20.00
+        res = self.client.post(self.url, {
+            **self.valid_payload,
+            'end_datetime': make_dt(12).isoformat(),
+        }, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Booking.objects.get().total_cost, Decimal('20.00'))
+
     def test_overlapping_booking_returns_400(self):
         make_booking(self.room, start_hour=10, end_hour=11)
         res = self.client.post(self.url, {
@@ -235,9 +251,9 @@ class BookingCreateViewTests(APITestCase):
         }, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_booking_on_refunded_slot_succeeds(self):
+    def test_booking_on_cancelled_slot_succeeds(self):
         make_booking(self.room, start_hour=10, end_hour=11,
-                     payment_status=Booking.PaymentStatus.REFUNDED)
+                     payment_status=Booking.PaymentStatus.REFUNDED, is_cancelled=True)
         res = self.client.post(self.url, self.valid_payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -302,9 +318,9 @@ class BookingMineViewTests(APITestCase):
 
     def test_returns_only_current_users_bookings(self):
         Booking.objects.create(room=self.room, user=self.user,
-                               start_datetime=make_dt(10), end_datetime=make_dt(11))
+                               start_datetime=make_dt(10), end_datetime=make_dt(11), total_cost=10)
         Booking.objects.create(room=self.room, user=self.other,
-                               start_datetime=make_dt(12), end_datetime=make_dt(13))
+                               start_datetime=make_dt(12), end_datetime=make_dt(13), total_cost=10)
         self.client.force_authenticate(user=self.user)
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -316,6 +332,13 @@ class BookingMineViewTests(APITestCase):
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, [])
+
+    def test_total_cost_is_included_in_response(self):
+        Booking.objects.create(room=self.room, user=self.user,
+                               start_datetime=make_dt(10), end_datetime=make_dt(12), total_cost='20.00')
+        self.client.force_authenticate(user=self.user)
+        res = self.client.get(self.url)
+        self.assertEqual(res.data[0]['total_cost'], '20.00')
 
 
 class BookingCreateStripeTests(APITestCase):
@@ -396,3 +419,102 @@ class BookingCreateStripeTests(APITestCase):
              self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
             res = self.client.post(self.url, self.payload, format='json')
         self.assertEqual(res.data['room']['name'], 'Room 101')
+
+
+class BookingCancelViewTests(APITestCase):
+    def setUp(self):
+        self.room = Room.objects.create(name='Room 101', slug='room-101', hourly_rate='10.00')
+        self.user = User.objects.create_user(username='u', email='u@example.com', password='x')
+        self.other = User.objects.create_user(username='o', email='o@example.com', password='x')
+        settings = StudioSettings.get_solo()
+        settings.min_cancellation_notice_days = 1
+        settings.save()
+        # Booking well in the future so it's within the cancellation window
+        self.booking = Booking.objects.create(
+            room=self.room,
+            user=self.user,
+            start_datetime=make_dt(10, d=FUTURE_DATE),
+            end_datetime=make_dt(11, d=FUTURE_DATE),
+            total_cost=10,
+        )
+
+    def cancel_url(self, pk=None):
+        return f'/api/bookings/{pk or self.booking.pk}/cancel/'
+
+    def test_unauthenticated_returns_401(self):
+        res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_cancel_pending_booking_returns_200(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertTrue(res.data['is_cancelled'])
+
+    def test_cancel_sets_flag_in_db(self):
+        self.client.force_authenticate(user=self.user)
+        self.client.post(self.cancel_url())
+        self.booking.refresh_from_db()
+        self.assertTrue(self.booking.is_cancelled)
+
+    def test_cancel_paid_booking_triggers_stripe_refund(self):
+        self.booking.payment_status = Booking.PaymentStatus.PAID
+        self.booking.stripe_payment_intent_id = 'pi_test_xyz'
+        self.booking.save()
+        self.client.force_authenticate(user=self.user)
+        with patch('bookings.views.stripe.Refund.create') as mock_refund, \
+             self.settings(STRIPE_SECRET_KEY='sk_test_xxx'):
+            res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        mock_refund.assert_called_once_with(payment_intent='pi_test_xyz')
+        self.assertEqual(res.data['payment_status'], 'REFUNDED')
+
+    def test_cancel_paid_booking_without_payment_intent_skips_stripe(self):
+        self.booking.payment_status = Booking.PaymentStatus.PAID
+        self.booking.stripe_payment_intent_id = ''
+        self.booking.save()
+        self.client.force_authenticate(user=self.user)
+        with patch('bookings.views.stripe.Refund.create') as mock_refund:
+            res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        mock_refund.assert_not_called()
+        self.assertTrue(res.data['is_cancelled'])
+
+    def test_already_cancelled_returns_400(self):
+        self.booking.is_cancelled = True
+        self.booking.save()
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_wrong_user_returns_403(self):
+        self.client.force_authenticate(user=self.other)
+        res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_nonexistent_booking_returns_404(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(self.cancel_url(pk=99999))
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_too_late_to_cancel_returns_400(self):
+        # Booking 12 hours away; with 1-day notice, the cutoff (start - 1 day) is already past
+        near = timezone.now() + timedelta(hours=12)
+        self.booking.start_datetime = near
+        self.booking.end_datetime = near + timedelta(hours=1)
+        self.booking.save()
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(self.cancel_url())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_cancellation_frees_slot_for_rebooking(self):
+        self.client.force_authenticate(user=self.user)
+        self.client.post(self.cancel_url())
+        self.booking.refresh_from_db()
+        overlap = Booking.objects.filter(
+            room=self.room,
+            start_datetime__lt=self.booking.end_datetime,
+            end_datetime__gt=self.booking.start_datetime,
+            is_cancelled=False,
+        )
+        self.assertFalse(overlap.exists())

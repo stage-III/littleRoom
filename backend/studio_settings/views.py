@@ -15,4 +15,5 @@ class PublicSettingsView(APIView):
             'min_notice_days': s.min_notice_days,
             'allow_pay_on_day': s.allow_pay_on_day,
             'min_booking_hours': s.min_booking_hours,
+            'min_cancellation_notice_days': s.min_cancellation_notice_days,
         })

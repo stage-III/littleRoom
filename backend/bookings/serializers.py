@@ -105,7 +105,8 @@ class BookingCreateSerializer(serializers.ModelSerializer):
                 room=room,
                 start_datetime__lt=end,
                 end_datetime__gt=start,
-            ).exclude(payment_status=Booking.PaymentStatus.REFUNDED)
+                is_cancelled=False,
+            )
             if overlap.exists():
                 raise serializers.ValidationError('This time slot is no longer available.')
 
@@ -114,6 +115,8 @@ class BookingCreateSerializer(serializers.ModelSerializer):
                 validated_data.pop('guest_email', None)
                 validated_data.pop('guest_name', None)
 
+            duration_hours = int((end - start).total_seconds() // 3600)
+            validated_data['total_cost'] = room.hourly_rate * duration_hours
             booking = Booking.objects.create(**validated_data)
 
         if (
@@ -140,4 +143,4 @@ class BookingListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ['id', 'room', 'start_datetime', 'end_datetime', 'payment_method', 'payment_status', 'created_at']
+        fields = ['id', 'room', 'start_datetime', 'end_datetime', 'payment_method', 'payment_status', 'is_cancelled', 'created_at', 'total_cost']
