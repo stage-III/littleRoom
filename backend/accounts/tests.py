@@ -26,6 +26,7 @@ class GuestBookingClaimTests(TestCase):
             start_datetime=make_dt(10),
             end_datetime=make_dt(11),
             guest_email='alice@example.com',
+            total_cost='10.00',
         )
 
     def _register(self, email):
@@ -71,6 +72,7 @@ class GuestBookingClaimTests(TestCase):
             start_datetime=make_dt(12),
             end_datetime=make_dt(13),
             guest_email='alice@example.com',
+            total_cost='10.00',
         )
         user = self._register('alice@example.com')
         self.booking.refresh_from_db()

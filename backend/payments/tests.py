@@ -33,6 +33,7 @@ class StripeWebhookViewTests(APITestCase):
             guest_email='test@example.com',
             stripe_payment_intent_id='pi_test_123',
             payment_status=Booking.PaymentStatus.PENDING,
+            total_cost='10.00',
         )
 
     def _post_event(self, event_type, intent_id='pi_test_123', booking_id=None):
