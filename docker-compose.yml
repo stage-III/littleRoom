@@ -33,6 +33,11 @@ services:
     networks:
       - internal
       - proxy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   nginx:
     image: ghcr.io/${GITHUB_REPOSITORY}/nginx:latest
@@ -42,6 +47,11 @@ services:
       - backend
     networks:
       - proxy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   proxy:

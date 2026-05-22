@@ -113,6 +113,32 @@
     else if (step === 'slot')    step = 'room';
     else if (step === 'payment') step = 'slot';
   }
+
+  $effect(() => {
+    if (step !== 'date' && step !== 'confirmation') {
+      history.pushState(null, '');
+    }
+  });
+
+  $effect(() => {
+    function onPopState() {
+      if (step === 'date' || step === 'confirmation') return;
+      goBack();
+    }
+
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (step !== 'date' && step !== 'confirmation') {
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener('popstate', onPopState);
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  });
 </script>
 
 <div class="booking-flow">
